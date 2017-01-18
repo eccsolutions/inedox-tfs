@@ -63,8 +63,10 @@ Tfs-GetSource(
             using (var client = new TfsSourceControlClient(this.TeamProjectCollectionUrl, this.UserName, this.PasswordOrToken, this.Domain, this)) {
                 this.LogInformation("Getting source path");
                 var tfsSourcePath = new TfsSourcePath(this.SourcePath);
-                this.LogInformation("Getting WorkspaceInfo");
-                var workspaceInfo = new WorkspaceInfo(this.WorkspaceName, this.WorkspaceDiskPath, this.GetRootWorkspaceDiskPath());
+                this.LogInformation("Getting root workspace disk path");
+                var rootWorkspaceDiskPath = this.GetRootWorkspaceDiskPath();
+                this.LogInformation("Getting workspace info");
+                var workspaceInfo = new WorkspaceInfo(this.WorkspaceName, this.WorkspaceDiskPath, rootWorkspaceDiskPath);
                 this.LogInformation("Resolving path");
                 var targetDirectory = context.ResolvePath(this.DiskPath);
 
