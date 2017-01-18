@@ -60,12 +60,19 @@ Tfs-GetSource(
         {
             this.LogInformation($"Getting source from TFS {(string.IsNullOrEmpty(this.Label) ? "(latest)" : $"labeled '{this.Label}'")}...");
 
-            using (var client = new TfsSourceControlClient(this.TeamProjectCollectionUrl, this.UserName, this.PasswordOrToken, this.Domain, this))
-            {
+            using (var client = new TfsSourceControlClient(this.TeamProjectCollectionUrl, this.UserName, this.PasswordOrToken, this.Domain, this)) {
+                this.LogInformation("Getting source path");
+                var tfsSourcePath = new TfsSourcePath(this.SourcePath);
+                this.LogInformation("Getting WorkspaceInfo");
+                var workspaceInfo = new WorkspaceInfo(this.WorkspaceName, this.WorkspaceDiskPath, this.GetRootWorkspaceDiskPath());
+                this.LogInformation("Resolving path");
+                var targetDirectory = context.ResolvePath(this.DiskPath);
+
+                this.LogInformation("Getting source");
                 client.GetSource(
-                    new TfsSourcePath(this.SourcePath),
-                    new WorkspaceInfo(this.WorkspaceName, this.WorkspaceDiskPath, this.GetRootWorkspaceDiskPath()), 
-                    context.ResolvePath(this.DiskPath), 
+                    tfsSourcePath,
+                    workspaceInfo, 
+                    targetDirectory, 
                     this.Label
                 );
             }
