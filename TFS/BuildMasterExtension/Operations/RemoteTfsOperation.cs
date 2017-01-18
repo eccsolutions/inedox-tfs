@@ -6,6 +6,7 @@ using Inedo.BuildMaster.Extensibility.Agents;
 using Inedo.BuildMaster.Extensibility.Credentials;
 using Inedo.BuildMaster.Extensibility.Operations;
 using Inedo.BuildMasterExtensions.TFS.Credentials;
+using Inedo.Diagnostics;
 using Inedo.Documentation;
 using Inedo.IO;
 
@@ -46,9 +47,17 @@ namespace Inedo.BuildMasterExtensions.TFS.Operations
 
         protected string GetRootWorkspaceDiskPath()
         {
-            using (var agent = BuildMasterAgent.CreateLocalAgent())
-            {
-                return PathEx.Combine(agent.GetService<IFileOperationsExecuter>().GetBaseWorkingDirectory(), "TfsWorkspaces");
+            try {
+                using (var agent = BuildMasterAgent.CreateLocalAgent()) {
+                    return PathEx.Combine(agent.GetService<IFileOperationsExecuter>().GetBaseWorkingDirectory(), "TfsWorkspaces");
+                }
+            }
+            catch (Exception ex) {
+                this.LogInformation($"Error occurred with the following exception message: {ex.Message}");
+                if (ex.InnerException != null)
+                    this.LogInformation($"The innerexception is: {ex.InnerException.Message}");
+
+                throw ex;
             }
         }
     }
